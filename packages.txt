@@ -2,3 +2,9 @@ libgl1
 libsm6
 libxrender1
 libglib2.0-0t64
+
+
+mediapipe==0.10.9
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+Pillow
