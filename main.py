@@ -69,9 +69,14 @@ footer { display: none; }
 # ── MediaPipe lazy loader (avoids module-level AttributeError on Cloud) ───────
 import mediapipe as mp
 
-mp_hands = mp.solutions.hands
-mp_drawing = mp.solutions.drawing_utils
-
+try:
+    mp_hands = mp.solutions.hands
+    mp_drawing = mp.solutions.drawing_utils
+except AttributeError:
+    import mediapipe.python.solutions.hands as hands
+    import mediapipe.python.solutions.drawing_utils as drawing_utils
+    mp_hands = hands
+    mp_drawing = drawing_utils
 # ── Helpers ───────────────────────────────────────────────────
 def fingers_up(lm):
     tips = [8, 12, 16, 20]
