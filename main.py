@@ -1,6 +1,5 @@
 import streamlit as st
 import cv2
-import mediapipe as mp
 import numpy as np
 import math
 import time
@@ -67,10 +66,13 @@ footer { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── MediaPipe setup ───────────────────────────────────────────
-mp_hands = mp.solutions.hands
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_utils.DrawingSpec
+# ── MediaPipe lazy loader (avoids module-level AttributeError on Cloud) ───────
+@st.cache_resource
+def load_mp():
+    import mediapipe as mp
+    return mp.solutions.hands, mp.solutions.drawing_utils
+
+mp_hands, mp_drawing = load_mp()
 
 
 # ── Helpers ───────────────────────────────────────────────────
