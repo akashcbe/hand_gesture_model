@@ -67,13 +67,10 @@ footer { display: none; }
 """, unsafe_allow_html=True)
 
 # ── MediaPipe lazy loader (avoids module-level AttributeError on Cloud) ───────
-@st.cache_resource
-def load_mp():
-    import mediapipe as mp
-    return mp.solutions.hands, mp.solutions.drawing_utils
+import mediapipe as mp
 
-mp_hands, mp_drawing = load_mp()
-
+mp_hands = mp.solutions.hands
+mp_drawing = mp.solutions.drawing_utils
 
 # ── Helpers ───────────────────────────────────────────────────
 def fingers_up(lm):
