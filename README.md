@@ -1,11 +1,11 @@
-# 🖱️ Cursor Control with Hand Gestures
+#  Cursor Control with Hand Gestures
 
 Control your computer cursor using just your hand ✋
 This project uses Computer Vision to track hand movements and perform mouse actions like moving, clicking, and scrolling — all in real time!
 
 ---
 
-## 🚀 Features
+##  Features
 
 * Real-time hand tracking using webcam
 * Control mouse movement with hand gestures
@@ -26,7 +26,7 @@ This project uses Computer Vision to track hand movements and perform mouse acti
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 cursor-control-hand-gesture/
 │── main.py
@@ -37,7 +37,7 @@ cursor-control-hand-gesture/
 
 ---
 
-## ⚙️ Installation
+##  Installation
 
 1. Clone the repository:
 
@@ -50,7 +50,7 @@ pip install -r requirements.txt
 
 ---
 
-## ▶️ How to Run
+##  How to Run
 
 python main.py
 
@@ -58,7 +58,7 @@ Make sure your webcam is ON
 
 ---
 
-## ✋ Gesture Controls
+##  Gesture Controls
 
 Index Finger → Move cursor
 Index + Middle Finger → Left click
@@ -67,7 +67,7 @@ Fist → Pause movement
 
 ---
 
-## 📸 Output
+##  Output
 
 * Detects hand in real-time
 * Tracks finger positions
@@ -76,7 +76,7 @@ Fist → Pause movement
 
 ---
 
-## 🔥 Future Enhancements
+##  Future Enhancements
 
 * Add gesture-based keyboard control
 * Improve gesture accuracy with ML model
@@ -85,7 +85,7 @@ Fist → Pause movement
 
 ---
 
-## ⚠️ Requirements
+##  Requirements
 
 * Python 3.7+
 * Webcam
@@ -93,7 +93,7 @@ Fist → Pause movement
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome!
 Feel free to fork and improve this project
@@ -106,7 +106,7 @@ MIT License
 
 ---
 
-## 💡 Author
+##  Author
 
 Akash K
 B.Tech AI & DS
