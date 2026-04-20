@@ -113,7 +113,9 @@ except Exception as e:
     print(e)
 
 # ── Webcam ────────────────────────────────────────────────────
-if libs_ok and source == "📷 Webcam (Live)":
+libs_ok = True   # or False based on your logic
+
+source = "📷 Webcam (Live)"  # default value
     status_ph.markdown('<div class="status-box">⚡ WEBCAM LIVE</div>', unsafe_allow_html=True)
     img_file = st.camera_input("Point your hand at the camera")
     if img_file:
