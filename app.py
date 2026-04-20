@@ -114,9 +114,10 @@ except Exception as e:
 
 # ── Webcam ────────────────────────────────────────────────────
 libs_ok = True   # or False based on your logic
-
-source = "📷 Webcam (Live)"  # default value
+if source == "📷 Webcam (Live)":
+    start_camera()
     status_ph.markdown('<div class="status-box">⚡ WEBCAM LIVE</div>', unsafe_allow_html=True)
+
     img_file = st.camera_input("Point your hand at the camera")
     if img_file:
         frame = cv2.cvtColor(np.array(Image.open(img_file)), cv2.COLOR_RGB2BGR)
