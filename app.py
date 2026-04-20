@@ -6,66 +6,52 @@ from PIL import Image
 import tempfile
 import os
 
-st.set_page_config(page_title="Hand Gesture Recognition", page_icon="✋", layout="wide")
+st.set_page_config(
+    page_title="Hand Gesture Recognition",
+    page_icon="✋",
+    layout="wide"
+)
 
-# ── UI Styling ────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# UI STYLES
+# ─────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Space Mono', monospace;
+html, body {
     background-color: #0d0d0d;
     color: #e0e0e0;
-}
-
-h1, h2, h3 {
-    font-family: 'Syne', sans-serif;
-}
-
-.stApp {
-    background-color: #0d0d0d;
-}
-
-.gesture-card {
-    background: #1a1a1a;
-    border: 1px solid #2e2e2e;
-    border-left: 4px solid #00f5a0;
-    border-radius: 6px;
-    padding: 14px 18px;
-    margin-bottom: 10px;
-    font-size: 0.85rem;
+    font-family: monospace;
 }
 
 .status-box {
     background: #111;
     border: 1px solid #333;
     border-radius: 8px;
-    padding: 16px;
+    padding: 14px;
     text-align: center;
-    font-size: 1.1rem;
-    letter-spacing: 2px;
     color: #00f5a0;
-    margin-bottom: 16px;
+    font-size: 18px;
+    margin-bottom: 10px;
 }
 
-.info-pill {
-    display: inline-block;
-    background: #1f1f1f;
-    border: 1px solid #444;
-    border-radius: 20px;
-    padding: 4px 14px;
-    font-size: 0.78rem;
+.gesture-box {
+    background: #1a1a1a;
+    padding: 10px;
+    border-left: 4px solid #00f5a0;
+    margin-bottom: 8px;
+}
+
+.info {
     color: #aaa;
-    margin: 3px;
+    font-size: 13px;
 }
-
-footer { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── Load Libraries ────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# LOAD LIBRARIES SAFELY
+# ─────────────────────────────────────────────
 @st.cache_resource
 def load_libs():
     import os
@@ -74,127 +60,134 @@ def load_libs():
     import cv2
     import mediapipe as mp
 
-    mp_hands = mp.solutions.hands
-    mp_drawing = mp.solutions.drawing_utils
-
-    return cv2, mp_hands, mp_drawing
+    return cv2, mp.solutions.hands, mp.solutions.drawing_utils
 
 
 cv2, mp_hands, mp_drawing = load_libs()
-libs_ok = True
 
 
-# ── Gesture Logic ─────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# GESTURE LOGIC
+# ─────────────────────────────────────────────
 def fingers_up(lm):
     tips = [8, 12, 16, 20]
-    return [1 if lm[tip].y < lm[tip - 2].y else 0 for tip in tips]
+    return [1 if lm[i].y < lm[i - 2].y else 0 for i in tips]
 
 
 def detect_gesture(lm, fingers, w, h):
-    dist = math.hypot((lm[4].x - lm[8].x) * w, (lm[4].y - lm[8].y) * h)
+    dist = math.hypot(
+        (lm[4].x - lm[8].x) * w,
+        (lm[4].y - lm[8].y) * h
+    )
 
     if fingers == [0, 0, 0, 1]:
-        return "SCREENSHOT", (0, 220, 180)
+        return "SCREENSHOT"
     elif fingers == [1, 0, 0, 0]:
-        return "MOVE CURSOR", (0, 200, 255)
+        return "MOVE CURSOR"
     elif fingers == [1, 1, 0, 0]:
-        return "SCROLL", (255, 200, 0)
+        return "SCROLL"
     elif fingers == [1, 1, 1, 1]:
-        return "RIGHT CLICK", (255, 100, 100)
+        return "RIGHT CLICK"
     elif dist < 30:
-        return "CLICK / DOUBLE CLICK", (180, 100, 255)
+        return "CLICK"
     else:
-        return "HAND DETECTED", (200, 200, 200)
+        return "HAND DETECTED"
 
 
-def process_frame(frame, detector):
+def process(frame, detector):
     h, w, _ = frame.shape
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = detector.process(rgb)
+
     gesture = None
 
     if result.multi_hand_landmarks:
-        hl = result.multi_hand_landmarks[0]
-        lm = hl.landmark
+        hand = result.multi_hand_landmarks[0]
+        lm = hand.landmark
+
+        mp_drawing.draw_landmarks(frame, hand, mp_hands.HAND_CONNECTIONS)
 
         fingers = fingers_up(lm)
-        gesture, color = detect_gesture(lm, fingers, w, h)
-
-        mp_drawing.draw_landmarks(
-            frame,
-            hl,
-            mp_hands.HAND_CONNECTIONS
-        )
+        gesture = detect_gesture(lm, fingers, w, h)
 
         cv2.putText(frame, gesture, (10, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 1,
+                    (0, 255, 0), 2)
 
     return frame, gesture
 
 
-# ── Sidebar ───────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("## ✋ Hand Gesture Control")
+# ─────────────────────────────────────────────
+# UI
+# ─────────────────────────────────────────────
+st.title("✋ Hand Gesture Recognition System")
 
-    source = st.radio(
-        "Input Source",
-        ["📷 Webcam (Live)", "🎞️ Upload Video", "🖼️ Upload Image"]
-    )
+source = st.sidebar.radio(
+    "Choose Input",
+    ["📷 Webcam", "🖼️ Image", "🎞️ Video"]
+)
 
-    st.markdown("### Gestures")
-    st.markdown("☝️ Move Cursor")
-    st.markdown("👌 Click")
-    st.markdown("✌️ Scroll")
-    st.markdown("🖐️ Right Click")
-    st.markdown("🤙 Screenshot")
+confidence = st.sidebar.slider("Confidence", 0.5, 1.0, 0.7)
 
-    confidence = st.slider("Confidence", 0.5, 1.0, 0.7)
+frame_holder = st.empty()
+status_holder = st.empty()
 
 
-# ── Main UI ───────────────────────────────────────────────────
-st.title("✋ Hand Gesture Recognition")
+# ─────────────────────────────────────────────
+# WEBCAM (SAFE STREAMLIT VERSION)
+# ─────────────────────────────────────────────
+if source == "📷 Webcam":
+    status_holder.markdown('<div class="status-box">WEBCAM MODE</div>', unsafe_allow_html=True)
 
-status_ph = st.empty()
-frame_ph = st.empty()
-gesture_out = st.empty()
-detection_out = st.empty()
+    img = st.camera_input("Capture hand")
 
-
-# ── Webcam ────────────────────────────────────────────────────
-if source == "📷 Webcam (Live)":
-    status_ph.markdown('<div class="status-box">⚡ WEBCAM LIVE</div>', unsafe_allow_html=True)
-
-    img_file = st.camera_input("Capture hand")
-
-    if img_file:
-        frame = cv2.cvtColor(np.array(Image.open(img_file)), cv2.COLOR_RGB2BGR)
+    if img:
+        frame = cv2.cvtColor(np.array(Image.open(img)), cv2.COLOR_RGB2BGR)
 
         with mp_hands.Hands(
             max_num_hands=1,
-            min_detection_confidence=confidence,
-            min_tracking_confidence=0.5
+            min_detection_confidence=confidence
         ) as detector:
 
-            processed, gesture = process_frame(frame, detector)
+            processed, gesture = process(frame, detector)
 
-        frame_ph.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB))
+        frame_holder.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB))
 
         if gesture:
-            gesture_out.markdown(f'<div class="status-box">{gesture}</div>', unsafe_allow_html=True)
-            detection_out.markdown('<span class="info-pill">🟢 Detected</span>', unsafe_allow_html=True)
+            st.success(gesture)
+
+
+# ─────────────────────────────────────────────
+# IMAGE
+# ─────────────────────────────────────────────
+elif source == "🖼️ Image":
+    img = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+
+    if img:
+        frame = cv2.cvtColor(np.array(Image.open(img).convert("RGB")), cv2.COLOR_RGB2BGR)
+
+        with mp_hands.Hands(max_num_hands=1, min_detection_confidence=confidence) as detector:
+            processed, gesture = process(frame, detector)
+
+        frame_holder.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB))
+
+        if gesture:
+            st.success(gesture)
         else:
-            gesture_out.markdown('<div class="status-box">NO HAND</div>', unsafe_allow_html=True)
+            st.warning("No hand detected")
 
 
-# ── Video ─────────────────────────────────────────────────────
-elif source == "🎞️ Upload Video":
-    video = st.file_uploader("Upload video", type=["mp4", "avi", "mov"])
+# ─────────────────────────────────────────────
+# VIDEO
+# ─────────────────────────────────────────────
+elif source == "🎞️ Video":
+    video = st.file_uploader("Upload Video", type=["mp4", "avi", "mov"])
 
     if video:
-        tf = tempfile.NamedTemporaryFile(delete=False)
-        tf.write(video.read())
+        temp = tempfile.NamedTemporaryFile(delete=False)
+        temp.write(video.read())
 
-        cap = cv2.VideoCapture(tf.name)
+        cap = cv2.VideoCapture(temp.name)
 
         with mp_hands.Hands(
             max_num_hands=1,
@@ -207,32 +200,9 @@ elif source == "🎞️ Upload Video":
                     break
 
                 frame = cv2.flip(frame, 1)
-                processed, gesture = process_frame(frame, detector)
+                processed, gesture = process(frame, detector)
 
-                frame_ph.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB))
+                frame_holder.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB))
 
         cap.release()
-        os.remove(tf.name)
-
-
-# ── Image ─────────────────────────────────────────────────────
-elif source == "🖼️ Upload Image":
-    img = st.file_uploader("Upload image", type=["jpg", "jpeg", "png"])
-
-    if img:
-        frame = cv2.cvtColor(np.array(Image.open(img).convert("RGB")), cv2.COLOR_RGB2BGR)
-
-        with mp_hands.Hands(max_num_hands=1, min_detection_confidence=confidence) as detector:
-            processed, gesture = process_frame(frame, detector)
-
-        frame_ph.image(cv2.cvtColor(processed, cv2.COLOR_BGR2RGB))
-
-        if gesture:
-            st.success(f"Detected: {gesture}")
-        else:
-            st.warning("No hand detected")
-
-
-# ── Default ───────────────────────────────────────────────────
-else:
-    status_ph.markdown('<div class="status-box">SELECT INPUT SOURCE</div>', unsafe_allow_html=True)
+        os.remove(temp.name)
