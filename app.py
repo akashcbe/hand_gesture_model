@@ -105,11 +105,10 @@ with col1:
     frame_ph = st.empty()
 
 # Load libs
-try:
-    cv2, mp_hands, mp_drawing = load_libs()
-    libs_ok = True
 except Exception as e:
-    st.error(f"❌ Failed to load libraries: {e}")
+    import traceback
+    st.error("❌ Failed to load libraries")
+    st.text(traceback.format_exc())
     libs_ok = False
 
 # ── Webcam ────────────────────────────────────────────────────
