@@ -106,10 +106,6 @@ Feel free to fork and improve this project
 
 ![image alter](https://github.com/akashcbe/hand_gesture_model/blob/2a37c90c92d2451df449c8090881808b425ce1aa/Screenshot%202026-04-20%20235457.png)
 
-## 📄 License
-
-MIT License
-
 ---
 
 ##  Author
