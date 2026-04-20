@@ -22,13 +22,18 @@ footer { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
-
 @st.cache_resource
 def load_libs():
+    import os
+    os.environ["MEDIAPIPE_DISABLE_GPU"] = "1"  
+
     import cv2
     import mediapipe as mp
-    return cv2, mp.solutions.hands, mp.solutions.drawing_utils
 
+    mp_hands   = mp.solutions.hands
+    mp_drawing = mp.solutions.drawing_utils
+
+    return cv2, mp_hands, mp_drawing
 
 def fingers_up(lm):
     tips = [8, 12, 16, 20]
