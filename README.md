@@ -102,6 +102,8 @@ Feel free to fork and improve this project
 ##   Screenshots
 ![image alter](https://github.com/akashcbe/hand_gesture_model/blob/fa9e2a52fbe1ca6e7e4bad3dc279958e7a3f073e/Screenshot%202026-04-20%20235343.png)
 
+![image alter](https://github.com/akashcbe/hand_gesture_model/blob/44c834beb054bd514aa47597c1cebded7ecab317/Screenshot%202026-04-20%20235423.png)
+
 ## 📄 License
 
 MIT License
