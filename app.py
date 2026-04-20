@@ -105,11 +105,12 @@ with col1:
     frame_ph = st.empty()
 
 # Load libs
+try:
+    # your code here
+    print("hello")
+
 except Exception as e:
-    import traceback
-    st.error("❌ Failed to load libraries")
-    st.text(traceback.format_exc())
-    libs_ok = False
+    print(e)
 
 # ── Webcam ────────────────────────────────────────────────────
 if libs_ok and source == "📷 Webcam (Live)":
